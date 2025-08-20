@@ -1,0 +1,573 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="WebApplication3.Site1" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <title>Library Management System</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Custom CSS -->
+    <link href="css/customStyleSheet.css" rel="stylesheet" />
+
+    <!-- jQuery (MUST come first) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+
+    <!-- Bootstrap JS CDN (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYz1HIcje39Wm4jDKdf19U8gI4ddQ3zY4RlvZ1ylVx13dy" crossorigin="anonymous"></script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+        }
+
+        form {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding-top: 80px; /* Account for fixed navbar */
+        }
+
+        /* Enhanced Navbar Styling */
+        .navbar {
+            background: rgba(26, 35, 46, 0.95) !important;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #ffffff !important;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-brand:hover {
+            color: #4facfe !important;
+            transform: translateY(-2px);
+        }
+
+        .brand-icon {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .brand-text {
+            background: linear-gradient(45deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-toggler {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #4facfe !important;
+            background: rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            width: 80%;
+        }
+
+        /* Dropdown Enhancements */
+        .dropdown-menu {
+            background: rgba(26, 35, 46, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-item {
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 4px 8px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(79, 172, 254, 0.2);
+            color: #4facfe;
+            transform: translateX(5px);
+        }
+
+        /* Footer Enhancements */
+        footer {
+            margin-top: auto;
+        }
+
+        #footer1 {
+            background: linear-gradient(135deg, rgba(26, 35, 46, 0.95), rgba(52, 58, 64, 0.95));
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px 0;
+            position: relative;
+        }
+
+        #footer1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #4facfe, transparent);
+        }
+
+        .footerlinks {
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .footerlinks:hover {
+            color: #4facfe !important;
+            background: rgba(79, 172, 254, 0.1);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        #footer2 {
+            background: rgba(33, 37, 41, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .footer-credit {
+            color: #4facfe;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-credit:hover {
+            color: #00f2fe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: rgba(26, 35, 46, 0.98);
+                margin-top: 15px;
+                border-radius: 12px;
+                padding: 20px;
+                backdrop-filter: blur(15px);
+            }
+
+            .nav-link {
+                margin: 5px 0;
+                text-align: center;
+            }
+
+            .footerlinks {
+                margin: 5px 10px;
+                display: inline-block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+
+            .brand-icon {
+                font-size: 1.8rem;
+            }
+
+            #footer1 {
+                padding: 20px 10px;
+            }
+
+            .footerlinks {
+                margin: 8px 5px;
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding-top: 70px;
+            }
+        }
+
+        /* Loading Animation */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(79, 172, 254, 0.95);
+            color: white;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1040;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(26, 35, 46, 0.6);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4facfe, #00f2fe);
+    border-radius: 10px;
+    border: 2px solid rgba(26, 35, 46, 0.8);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00f2fe, #4facfe);
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #4facfe rgba(26, 35, 46, 0.6);
+}
+
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <!-- Page Loader -->
+        <div class="page-loader" id="pageLoader">
+            <div class="loader-spinner"></div>
+        </div>
+
+        <!-- Scroll Progress Indicator -->
+        <div class="scroll-indicator" id="scrollIndicator"></div>
+
+        <!-- Enhanced NAVBAR -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="homepage.aspx">
+                    <i class="fas fa-book brand-icon"></i>
+                    <span class="brand-text">Library Management</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/mainPage.aspx">
+                                <i class="fas fa-university me-1"></i>College
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.aspx">
+                                <i class="fas fa-info-circle me-1"></i>About Us
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="terms.aspx">
+                                <i class="fas fa-file-contract me-1"></i>Terms
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <asp:LinkButton ID="LinkButton1" class="nav-link" runat="server" OnClick="LinkButton1_Click">
+                                <i class="fas fa-book-open me-1"></i>Browse Catalog
+                            </asp:LinkButton>
+                        </li>
+                        <li class="nav-item">
+                            <asp:LinkButton ID="LinkButton2" class="nav-link" runat="server" OnClick="LinkButton2_Click">
+                                <i class="fas fa-sign-in-alt me-1"></i>Member Login
+                            </asp:LinkButton>
+                        </li>
+                        <li class="nav-item">
+                            <asp:LinkButton ID="LinkButton3" class="nav-link" runat="server" OnClick="LinkButton3_Click">
+                                <i class="fas fa-user-plus me-1"></i>Join Library
+                            </asp:LinkButton>
+                        </li>
+                        <li class="nav-item">
+                            <asp:LinkButton Visible="false" ID="LinkButton5" class="nav-link" runat="server" OnClick="LinkButton5_Click">
+                                <i class="fas fa-user me-1"></i>Hello Member
+                            </asp:LinkButton>
+                        </li>
+                        <li class="nav-item">
+                            <asp:LinkButton Visible="false" ID="LinkButton4" class="nav-link" runat="server" OnClick="LinkButton4_Click">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </asp:LinkButton>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <asp:ContentPlaceHolder ID="ContentPlaceholder1" runat="server"></asp:ContentPlaceHolder>
+        </div>
+
+        <!-- Enhanced FOOTER -->
+        <footer>
+            <div id="footer1" class="text-center text-white">
+                <div class="container">
+                    <p class="mb-0">
+                        <asp:LinkButton ID="LinkButton6" class="footerlinks" runat="server" OnClick="LinkButton6_Click">
+                            <i class="fas fa-user-shield me-1"></i>Admin Portal
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton12" class="footerlinks" runat="server" Visible="false" OnClick="LinkButton12_Click">
+                            <i class="fas fa-user me-1"></i>Member Login
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton7" class="footerlinks" runat="server" OnClick="LinkButton7_Click" Visible="false">
+                            <i class="fas fa-pen-fancy me-1"></i>Author Management
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton8" class="footerlinks" runat="server" OnClick="LinkButton8_Click" Visible="false">
+                            <i class="fas fa-building me-1"></i>Publisher Management
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton9" class="footerlinks" runat="server" OnClick="LinkButton9_Click" Visible="false">
+                            <i class="fas fa-warehouse me-1"></i>Book Inventory
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton10" class="footerlinks" runat="server" OnClick="LinkButton10_Click" Visible="false">
+                            <i class="fas fa-exchange-alt me-1"></i>Book Issuing
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="LinkButton11" class="footerlinks" runat="server" OnClick="LinkButton11_Click" Visible="false">
+                            <i class="fas fa-users-cog me-1"></i>Member Management
+                        </asp:LinkButton>
+                    </p>
+                </div>
+            </div>
+
+            <div id="footer2" class="text-center">
+                <div class="container">
+                    <p class="footer-text mb-0">
+                        &copy; 2025 Library Management System. All rights Reserved. | 
+                        Developed by <a href="#" class="footer-credit" target="_blank">Mukesh & Tushar</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Notification Container -->
+        <div id="notificationContainer"></div>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide page loader
+            setTimeout(function() {
+                const loader = document.getElementById('pageLoader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 1000);
+
+            // Scroll progress indicator
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            
+            window.addEventListener('scroll', function() {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                scrollIndicator.style.width = scrolled + '%';
+                
+                // Navbar background change on scroll
+                const navbar = document.querySelector('.navbar');
+                if (winScroll > 50) {
+                    navbar.style.background = 'rgba(26, 35, 46, 0.98)';
+                } else {
+                    navbar.style.background = 'rgba(26, 35, 46, 0.95)';
+                }
+            });
+
+            // Active nav link highlighting
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.includes(currentPage)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
